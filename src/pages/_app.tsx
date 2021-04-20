@@ -2,15 +2,17 @@ import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ThemeProvider } from 'styled-components'
 
+import * as S from 'styles/_app.styles'
 import { GlobalStyles } from 'styles/global'
 import theme from 'styles/theme'
+import { Header } from 'components/Header'
+import { Player } from 'components/Player'
 
-function MyApp({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }: AppProps) {
   const HeadContent = () => (
     <Head>
-      <title>NextJS Storybook template</title>
-      <link rel="shortcut icon" href="/img/icon-512.png" />
-      <link rel="apple-touch-icon" href="/img/icon-512.png" />
+      <title>Podcastr</title>
+      <link rel="shortcut icon" type="image/png" href="/img/favicon.png" />
       <link rel="manifest" href="/manifest.json" />
       <meta
         name="description"
@@ -20,12 +22,19 @@ function MyApp({ Component, pageProps }: AppProps) {
   )
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <HeadContent />
-      <GlobalStyles />
-      <Component {...pageProps} />
-    </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <GlobalStyles />
+
+        <S.Wrapper>
+          <S.Main>
+            <Header />
+            <Component {...pageProps} />
+          </S.Main>
+          <Player />
+        </S.Wrapper>
+      </ThemeProvider>
+    </>
   )
 }
-
-export default MyApp

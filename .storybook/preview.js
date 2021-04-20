@@ -17,7 +17,7 @@ export const parameters = {
       },
       {
         name: 'dark',
-        value: theme.colors.mainBg
+        value: theme.colors['gray-800']
       }
     ]
   }
