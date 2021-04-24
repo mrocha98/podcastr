@@ -6,5 +6,12 @@ module.exports = withPWA({
   pwa: {
     dest: 'public',
     disable: !isProd
+  },
+  images: {
+    domains: [
+      'storage.googleapis.com',
+      'images.unsplash.com',
+      'avatars.githubusercontent.com'
+    ]
   }
 })

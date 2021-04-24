@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import format from 'date-fns/format'
 import ptBr from 'date-fns/locale/pt-BR'
 
@@ -8,7 +9,9 @@ export const Header = () => {
 
   return (
     <S.Wrapper>
-      <img src="/img/logo.svg" alt="fones de ouvido" aria-label="podcastr" />
+      <Link href="/">
+        <img src="/img/logo.svg" alt="fones de ouvido" aria-label="podcastr" />
+      </Link>
 
       <S.Description>O melhor para você ouvir, sempre</S.Description>
 

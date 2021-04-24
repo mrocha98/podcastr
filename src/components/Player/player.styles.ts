@@ -1,9 +1,10 @@
 import styled, { css } from 'styled-components'
+import media from 'styled-media-query'
 
 export const Wrapper = styled.div`
   ${({ theme }) => css`
-    padding: 3rem 4rem;
-    width: 26.5.rem;
+    padding: 2rem;
+    width: 21rem;
     height: 100vh;
 
     background: ${theme.colors['purple-500']};
@@ -13,6 +14,11 @@ export const Wrapper = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+
+    ${media.greaterThan('medium')`
+      padding: 3rem 4rem;
+      width: 26.5.rem;
+    `}
   `}
 `
 

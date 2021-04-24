@@ -27,10 +27,17 @@ export default {
     'gray-200': 'var(--gray-200)',
     'gray-500': 'var(--gray-500)',
     'gray-800': 'var(--gray-800)',
-    'green-500': 'var(--gren-500)',
+    'green-500': 'var(--green-500)',
     'purple-300': 'var(--purple-300)',
     'purple-400': 'var(--purple-400)',
     'purple-500': 'var(--purple-500)',
     'purple-800': 'var(--purple-800)'
+  },
+  layers: {
+    base: 10,
+    menu: 20,
+    overlay: 30,
+    modal: 40,
+    alwaysOnTop: 50
   }
 } as const
