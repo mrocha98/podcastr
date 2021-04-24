@@ -177,10 +177,12 @@ export const EpisodeDetails = styled.div`
     p {
       font-size: 0.875rem;
       margin-top: 0.5rem;
+    }
+
+    a,
+    p {
       max-width: 70%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      word-break: break-word;
     }
 
     span {

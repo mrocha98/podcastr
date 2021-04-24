@@ -5,6 +5,7 @@ import {
   DefaultTheme
 } from 'styled-components'
 import media from 'styled-media-query'
+import 'rc-slider/assets/index.css'
 
 export type GlobalStyleProps = {
   removeBg?: boolean

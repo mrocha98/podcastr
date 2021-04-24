@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components'
 import media from 'styled-media-query'
+import RCSlider from 'rc-slider'
 
 export const Wrapper = styled.div`
   ${({ theme }) => css`
@@ -101,6 +102,15 @@ export const Button = styled.button`
   background: transparent;
   border: 0;
   font-size: 0;
+  transition: filter 200ms;
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.8);
+  }
 `
 
 export const PlayButton = styled(Button)`
@@ -109,10 +119,14 @@ export const PlayButton = styled(Button)`
     height: 4rem;
     border-radius: 1rem;
     background: ${theme.colors['purple-400']};
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.95);
+    }
   `}
 `
 
-export const Slider = styled.div`
+export const SliderContainer = styled.div`
   flex: 1;
 `
 
@@ -122,5 +136,31 @@ export const EmptySlider = styled.div`
     height: 4px;
     background: ${theme.colors['purple-300']};
     border-radius: 2px;
+  `}
+`
+
+export const Slider = styled(RCSlider)``
+
+export const CurrentEpisode = styled.div`
+  ${({ theme }) => css`
+    text-align: center;
+
+    img {
+      border-radius: 1.5rem;
+    }
+
+    strong {
+      display: block;
+      margin-top: 2rem;
+      font: ${theme.font.weight.bold} 1.25rem ${theme.font.family.lexend};
+      line-height: 1.75rem;
+    }
+
+    span {
+      display: block;
+      margin-top: 1rem;
+      opacity: 0.6;
+      line-height: 1.5rem;
+    }
   `}
 `

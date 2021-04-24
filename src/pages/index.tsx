@@ -4,15 +4,15 @@ import Link from 'next/link'
 import { format, parseISO } from 'date-fns'
 import localePtBr from 'date-fns/locale/pt-BR'
 
+import * as S from 'styles/pages/home.styles'
+import { usePlayer } from 'contexts/PlayerContext'
 import { client } from 'graphql/client'
-
 import {
   GET_HOME_PAGE,
   GetHomePageQueryResult,
   Episode
 } from 'graphql/queries/getHomePage'
 import { convertDurationToTimeString } from 'utils/datetime/convertDurationToTimeString'
-import * as S from 'styles/pages/home.styles'
 
 type EpisodeInfo = Episode & {
   durationAsString: string
@@ -28,6 +28,20 @@ export default function HomePage({
   allEpisodes,
   latestEpisodes
 }: HomePageProps) {
+  const { play } = usePlayer()
+
+  const onPlayClick = (episode: EpisodeInfo) => {
+    const parsedEpisode = {
+      title: episode.title,
+      members: episode.membersNamesAsString,
+      thumbnail: episode.thumbnail,
+      duration: episode.file.duration,
+      url: episode.file.url
+    }
+
+    play(parsedEpisode)
+  }
+
   return (
     <S.Wrapper>
       <S.SectionLatestEpisodes>
@@ -41,7 +55,6 @@ export default function HomePage({
                 width={192}
                 height={192}
                 src={episode.thumbnail}
-                alt={episode.title}
                 objectFit="cover"
               />
 
@@ -54,7 +67,7 @@ export default function HomePage({
                 <span>{episode.durationAsString}</span>
               </S.EpisodeDetails>
 
-              <S.PlayButton>
+              <S.PlayButton onClick={() => onPlayClick(episode)}>
                 <img src="/img/play-green.svg" alt="Tocar episódio" />
               </S.PlayButton>
             </li>
@@ -80,8 +93,8 @@ export default function HomePage({
               <tr key={`all-${episode.id}`}>
                 <td className="td-thumb">
                   <Image
-                    width={164}
-                    height={164}
+                    width={192}
+                    height={192}
                     src={episode.thumbnail}
                     objectFit="cover"
                   />
@@ -95,7 +108,10 @@ export default function HomePage({
                 <td className="td-published-at">{episode.publishedAt}</td>
                 <td>{episode.durationAsString}</td>
                 <td>
-                  <S.PlayButton type="button">
+                  <S.PlayButton
+                    type="button"
+                    onClick={() => onPlayClick(episode)}
+                  >
                     <img src="/img/play-green.svg" alt="Tocar episódio" />
                   </S.PlayButton>
                 </td>
