@@ -5,7 +5,8 @@ import { format, parseISO } from 'date-fns'
 import localePtBr from 'date-fns/locale/pt-BR'
 
 import * as S from 'styles/pages/home.styles'
-import { usePlayer } from 'contexts/PlayerContext'
+import { SEO } from 'components/SEO'
+import { usePlayer, Episode as ContextEpisode } from 'contexts/PlayerContext'
 import { client } from 'graphql/client'
 import {
   GET_HOME_PAGE,
@@ -28,99 +29,109 @@ export default function HomePage({
   allEpisodes,
   latestEpisodes
 }: HomePageProps) {
-  const { play } = usePlayer()
+  const { playList } = usePlayer()
 
-  const onPlayClick = (episode: EpisodeInfo) => {
-    const parsedEpisode = {
-      title: episode.title,
-      members: episode.membersNamesAsString,
-      thumbnail: episode.thumbnail,
-      duration: episode.file.duration,
-      url: episode.file.url
-    }
+  const convertEpisodeInfoToContextEpisode = (
+    episode: EpisodeInfo
+  ): ContextEpisode => ({
+    title: episode.title,
+    members: episode.membersNamesAsString,
+    thumbnail: episode.thumbnail,
+    duration: episode.file.duration,
+    url: episode.file.url
+  })
 
-    play(parsedEpisode)
+  const episodesList: ContextEpisode[] = [
+    ...latestEpisodes.map(convertEpisodeInfoToContextEpisode),
+    ...allEpisodes.map(convertEpisodeInfoToContextEpisode)
+  ]
+
+  const onPlayClick = (index: number) => {
+    playList(episodesList, index)
   }
 
   return (
-    <S.Wrapper>
-      <S.SectionLatestEpisodes>
-        <h2>Últimos lançamentos</h2>
+    <>
+      <SEO title="Página Inicial" />
+      <S.Wrapper>
+        <S.SectionLatestEpisodes>
+          <h2>Últimos lançamentos</h2>
 
-        <ul>
-          {latestEpisodes.map((episode) => (
-            <li key={`lst-${episode.slug}`}>
-              <Image
-                className="thumb"
-                width={192}
-                height={192}
-                src={episode.thumbnail}
-                objectFit="cover"
-              />
+          <ul>
+            {latestEpisodes.map((episode, index) => (
+              <li key={`lst-${episode.slug}`}>
+                <Image
+                  className="thumb"
+                  width={192}
+                  height={192}
+                  src={episode.thumbnail}
+                  objectFit="cover"
+                />
 
-              <S.EpisodeDetails>
-                <Link href={`/episodes/${episode.slug}--${episode.id}`}>
-                  <a>{episode.title}</a>
-                </Link>
-                <p>{episode.membersNamesAsString}</p>
-                <span>{episode.publishedAt}</span>
-                <span>{episode.durationAsString}</span>
-              </S.EpisodeDetails>
-
-              <S.PlayButton onClick={() => onPlayClick(episode)}>
-                <img src="/img/play-green.svg" alt="Tocar episódio" />
-              </S.PlayButton>
-            </li>
-          ))}
-        </ul>
-      </S.SectionLatestEpisodes>
-      <S.SectionAllEpisodes>
-        <h2>Todos episódios</h2>
-
-        <table cellSpacing={0}>
-          <thead>
-            <tr>
-              <th />
-              <th>Podcast</th>
-              <th>Integrantes</th>
-              <th>Data</th>
-              <th>Duração</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {allEpisodes.map((episode) => (
-              <tr key={`all-${episode.id}`}>
-                <td className="td-thumb">
-                  <Image
-                    width={192}
-                    height={192}
-                    src={episode.thumbnail}
-                    objectFit="cover"
-                  />
-                </td>
-                <td>
+                <S.EpisodeDetails>
                   <Link href={`/episodes/${episode.slug}--${episode.id}`}>
                     <a>{episode.title}</a>
                   </Link>
-                </td>
-                <td>{episode.membersNamesAsString}</td>
-                <td className="td-published-at">{episode.publishedAt}</td>
-                <td>{episode.durationAsString}</td>
-                <td>
-                  <S.PlayButton
-                    type="button"
-                    onClick={() => onPlayClick(episode)}
-                  >
-                    <img src="/img/play-green.svg" alt="Tocar episódio" />
-                  </S.PlayButton>
-                </td>
-              </tr>
+                  <p>{episode.membersNamesAsString}</p>
+                  <span>{episode.publishedAt}</span>
+                  <span>{episode.durationAsString}</span>
+                </S.EpisodeDetails>
+
+                <S.PlayButton onClick={() => onPlayClick(index)}>
+                  <img src="/img/play-green.svg" alt="Tocar episódio" />
+                </S.PlayButton>
+              </li>
             ))}
-          </tbody>
-        </table>
-      </S.SectionAllEpisodes>
-    </S.Wrapper>
+          </ul>
+        </S.SectionLatestEpisodes>
+        <S.SectionAllEpisodes>
+          <h2>Todos episódios</h2>
+
+          <table cellSpacing={0}>
+            <thead>
+              <tr>
+                <th />
+                <th>Podcast</th>
+                <th>Integrantes</th>
+                <th>Data</th>
+                <th>Duração</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {allEpisodes.map((episode, index) => (
+                <tr key={`all-${episode.id}`}>
+                  <td className="td-thumb">
+                    <Image
+                      width={192}
+                      height={192}
+                      src={episode.thumbnail}
+                      objectFit="cover"
+                    />
+                  </td>
+                  <td>
+                    <Link href={`/episodes/${episode.slug}--${episode.id}`}>
+                      <a>{episode.title}</a>
+                    </Link>
+                  </td>
+                  <td>{episode.membersNamesAsString}</td>
+                  <td className="td-published-at">{episode.publishedAt}</td>
+                  <td>{episode.durationAsString}</td>
+                  <td>
+                    <S.PlayButton
+                      type="button"
+                      onClick={() => onPlayClick(index + latestEpisodes.length)}
+                    >
+                      <img src="/img/play-green.svg" alt="Tocar episódio" />
+                    </S.PlayButton>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </S.SectionAllEpisodes>
+      </S.Wrapper>
+    </>
   )
 }
 

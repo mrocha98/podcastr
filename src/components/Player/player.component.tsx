@@ -1,26 +1,56 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 
 import * as S from './player.styles'
 import { usePlayer } from 'contexts/PlayerContext'
+import { convertDurationToTimeString } from 'utils/datetime/convertDurationToTimeString'
 
 export const Player = () => {
   const audioRef = useRef<HTMLAudioElement>(null)
+  const [progress, setProgress] = useState(0)
 
   const {
     episodeList,
     currentEpisodeIndex,
     isPlaying,
     setIsPlaying,
-    togglePlay
+    togglePlay,
+    playPrevious,
+    playNext,
+    hasNext,
+    hasPrevious,
+    isLooping,
+    toggleLoop,
+    isShuffling,
+    toggleShuffle,
+    clearPlayerState
   } = usePlayer()
 
   const episode = useMemo(() => episodeList[currentEpisodeIndex], [
     currentEpisodeIndex,
     episodeList
   ])
-
   const isEmpty = useMemo(() => !episode, [episode])
+
+  const setupProgressListener = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0
+
+      audioRef.current.addEventListener('timeupdate', () => {
+        setProgress(Math.floor(audioRef.current!.currentTime))
+      })
+    }
+  }
+
+  const handleSeek = (amount: number) => {
+    audioRef.current!.currentTime = amount
+    setProgress(amount)
+  }
+
+  const handleEpisodeEnded = () => {
+    if (hasNext) playNext()
+    else clearPlayerState()
+  }
 
   useEffect(() => {
     if (!audioRef.current) return
@@ -55,50 +85,72 @@ export const Player = () => {
 
       <S.Footer isEmpty={isEmpty}>
         <S.Progress>
-          <span>00:00</span>
+          <span>{convertDurationToTimeString(progress)}</span>
           <S.SliderContainer>
             {isEmpty ? (
               <S.EmptySlider />
             ) : (
               <S.Slider
-                trackStyle={{ backgroundColor: '#04d361' }}
-                railStyle={{ backgroundColor: '#9f75ff' }}
-                handleStyle={{ borderColor: '#04d361', borderWidth: 4 }}
+                max={episode.duration}
+                value={progress}
+                onChange={handleSeek}
               />
             )}
           </S.SliderContainer>
-          <span>00:00</span>
+          <span>{convertDurationToTimeString(episode?.duration ?? 0)}</span>
         </S.Progress>
 
         {episode && (
           <audio
             ref={audioRef}
             src={episode.url}
+            loop={isLooping}
             autoPlay
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
+            onLoadedMetadata={setupProgressListener}
+            onEnded={handleEpisodeEnded}
           />
         )}
 
         <S.ButtonsContainer>
-          <S.Button type="button" disabled={isEmpty}>
+          <S.ShuffleButton
+            type="button"
+            disabled={isEmpty}
+            isActive={isShuffling}
+            onClick={toggleShuffle}
+          >
             <img src="img/shuffle.svg" alt="Embaralhar" />
-          </S.Button>
-          <S.Button type="button" disabled={isEmpty}>
+          </S.ShuffleButton>
+          <S.Button
+            type="button"
+            disabled={isEmpty || !hasPrevious}
+            onClick={playPrevious}
+          >
             <img src="img/play-previous.svg" alt="Tocar anterior" />
           </S.Button>
           <S.PlayButton type="button" disabled={isEmpty} onClick={togglePlay}>
-            <img
-              src={isPlaying ? 'img/pause.svg' : 'img/play.svg'}
-              alt={isPlaying ? 'Pausar' : 'Tocar'}
-            />
+            {isPlaying ? (
+              <img src="/img/pause.svg" alt="Pausar" />
+            ) : (
+              <img src="/img/play.svg" alt="Tocar" />
+            )}
           </S.PlayButton>
-          <S.Button type="button" disabled={isEmpty}>
+          <S.Button
+            type="button"
+            disabled={isEmpty || !hasNext}
+            onClick={playNext}
+          >
             <img src="img/play-next.svg" alt="Tocar próxima" />
           </S.Button>
-          <S.Button type="button" disabled={isEmpty}>
+          <S.LoopButton
+            type="button"
+            disabled={isEmpty}
+            isActive={isLooping}
+            onClick={toggleLoop}
+          >
             <img src="img/repeat.svg" alt="Repetir" />
-          </S.Button>
+          </S.LoopButton>
         </S.ButtonsContainer>
       </S.Footer>
     </S.Wrapper>

@@ -78,7 +78,9 @@ type FooterProps = {
 
 const footerModifiers = {
   empty: () => css`
-    opacity: 0.5;
+    ${Progress} {
+      opacity: 0.5;
+    }
   `
 }
 
@@ -106,6 +108,7 @@ export const Button = styled.button`
 
   &:disabled {
     cursor: default;
+    opacity: 0.5;
   }
 
   &:hover:not(:disabled) {
@@ -126,6 +129,34 @@ export const PlayButton = styled(Button)`
   `}
 `
 
+type LoopButtonProps = {
+  isActive?: boolean
+}
+
+const loopButtonModifiers = {
+  active: () => css`
+    filter: invert(0.35) sepia(1) saturate(3) hue-rotate(100deg);
+  `
+}
+
+export const LoopButton = styled(Button)<LoopButtonProps>`
+  ${({ isActive }) => css`
+    ${isActive && loopButtonModifiers.active()}
+  `}
+`
+
+type ShuffleButtonProps = Pick<LoopButtonProps, 'isActive'>
+
+const shuffleButtonModifiers = {
+  active: loopButtonModifiers.active
+}
+
+export const ShuffleButton = styled(Button)<ShuffleButtonProps>`
+  ${({ isActive }) => css`
+    ${isActive && shuffleButtonModifiers.active()}
+  `}
+`
+
 export const SliderContainer = styled.div`
   flex: 1;
 `
@@ -139,7 +170,14 @@ export const EmptySlider = styled.div`
   `}
 `
 
-export const Slider = styled(RCSlider)``
+export const Slider = styled(RCSlider).attrs(() => ({
+  trackStyle: { backgroundColor: '#04d361' },
+  railStyle: { backgroundColor: '#9f75ff' },
+  handleStyle: {
+    borderColor: '#04d361',
+    borderWidth: 4
+  }
+}))``
 
 export const CurrentEpisode = styled.div`
   ${({ theme }) => css`

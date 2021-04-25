@@ -1,21 +1,26 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Image from 'next/image'
-import Head from 'next/head'
 import Link from 'next/link'
 import { format, parseISO } from 'date-fns'
 import localePtBr from 'date-fns/locale/pt-BR'
+import striptags from 'striptags'
 
+import * as S from 'styles/pages/episode.styles'
+import { SEO } from 'components/SEO'
 import { client } from 'graphql/client'
 import {
   GET_EPISODE_PAGE,
   GetEpisodePageQueryResult,
   Episode
 } from 'graphql/queries/getEpisodePage'
-import * as S from 'styles/pages/episode.styles'
 import { convertDurationToTimeString } from 'utils/datetime/convertDurationToTimeString'
+import { usePlayer, Episode as ContextEpisode } from 'contexts/PlayerContext'
 
 type EpisodePageProps = Episode & {
   durationAsString: string
+  SEOData: {
+    description: string
+  }
 }
 
 export default function EpisodePage({
@@ -24,13 +29,36 @@ export default function EpisodePage({
   members,
   publishedAt,
   thumbnail,
+  file: { duration, url },
   durationAsString
 }: EpisodePageProps) {
+  const { play } = usePlayer()
+
+  const playableEpisode: ContextEpisode = {
+    title,
+    thumbnail,
+    duration,
+    url,
+    members: members.map((member) => member.name).join(', ')
+  }
+
+  const onPlayClick = () => {
+    play(playableEpisode)
+  }
+
+  const SEOContent = () => (
+    <SEO title={title}>
+      <meta
+        name="description"
+        content={striptags(description.substr(0, 160))}
+      />
+      <meta property="og:title" content={title} />
+    </SEO>
+  )
+
   return (
     <>
-      <Head>
-        <title>{title}</title>
-      </Head>
+      <SEOContent />
       <S.Wrapper>
         <S.ThumbnailContainer>
           <Link href="/">
@@ -39,7 +67,7 @@ export default function EpisodePage({
             </S.BackButton>
           </Link>
           <Image width={700} height={320} src={thumbnail} objectFit="cover" />
-          <S.PlayButton type="button">
+          <S.PlayButton type="button" onClick={onPlayClick}>
             <img src="/img/play.svg" alt="Tocar episódio" />
           </S.PlayButton>
         </S.ThumbnailContainer>
