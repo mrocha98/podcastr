@@ -1,8 +1,21 @@
 {
-  "name": "nextjs-storybook-template",
+  "name": "podcastr",
   "version": "0.1.0",
   "private": true,
+  "description": "Front-end of Podcastr project",
+  "author": {
+    "name": "Matheus Rocha",
+    "email": "matheus_rocha98@outlook.com"
+  },
   "license": "MIT",
+  "homepage": "https://podcastr-swart.vercel.app/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrocha98/podcastr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mrocha98/podcastr/issues"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
